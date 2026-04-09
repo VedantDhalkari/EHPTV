@@ -1,0 +1,34 @@
+-- =========================================
+-- BANK DEMO DATABASE SETUP
+-- Stored XSS Educational Lab
+-- =========================================
+
+-- 1️⃣ Create Database
+CREATE DATABASE IF NOT EXISTS bankdemo;
+
+-- 2️⃣ Use Database
+USE bankdemo;
+
+-- 3️⃣ Drop table if already exists (reset purpose)
+DROP TABLE IF EXISTS feedback;
+
+-- 4️⃣ Create Feedback Table
+CREATE TABLE feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5️⃣ Insert Normal Sample Data
+INSERT INTO feedback (name, email, message) VALUES
+('Rahul Sharma', 'rahul@example.com', 'Great banking services!'),
+('Priya Singh', 'priya@example.com', 'Customer support is helpful.');
+
+-- 6️⃣ Insert Stored XSS Demo Payload (Educational Only)
+INSERT INTO feedback (name, email, message) VALUES
+('Attacker', 'attacker@test.com', '<script>alert("Stored XSS Demo")</script>');
+
+-- 7️⃣ View All Records
+SELECT * FROM feedback;

